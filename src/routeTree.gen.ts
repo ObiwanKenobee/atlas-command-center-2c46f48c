@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SimulatorRouteImport } from './routes/simulator'
+import { Route as ReasoningRouteImport } from './routes/reasoning'
 import { Route as MissionsRouteImport } from './routes/missions'
 import { Route as MemoryRouteImport } from './routes/memory'
 import { Route as MapRouteImport } from './routes/map'
@@ -21,6 +22,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const SimulatorRoute = SimulatorRouteImport.update({
   id: '/simulator',
   path: '/simulator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReasoningRoute = ReasoningRouteImport.update({
+  id: '/reasoning',
+  path: '/reasoning',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MissionsRoute = MissionsRouteImport.update({
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/map': typeof MapRoute
   '/memory': typeof MemoryRoute
   '/missions': typeof MissionsRoute
+  '/reasoning': typeof ReasoningRoute
   '/simulator': typeof SimulatorRoute
 }
 export interface FileRoutesByTo {
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/map': typeof MapRoute
   '/memory': typeof MemoryRoute
   '/missions': typeof MissionsRoute
+  '/reasoning': typeof ReasoningRoute
   '/simulator': typeof SimulatorRoute
 }
 export interface FileRoutesById {
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/map': typeof MapRoute
   '/memory': typeof MemoryRoute
   '/missions': typeof MissionsRoute
+  '/reasoning': typeof ReasoningRoute
   '/simulator': typeof SimulatorRoute
 }
 export interface FileRouteTypes {
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/memory'
     | '/missions'
+    | '/reasoning'
     | '/simulator'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/memory'
     | '/missions'
+    | '/reasoning'
     | '/simulator'
   id:
     | '__root__'
@@ -120,6 +131,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/memory'
     | '/missions'
+    | '/reasoning'
     | '/simulator'
   fileRoutesById: FileRoutesById
 }
@@ -131,6 +143,7 @@ export interface RootRouteChildren {
   MapRoute: typeof MapRoute
   MemoryRoute: typeof MemoryRoute
   MissionsRoute: typeof MissionsRoute
+  ReasoningRoute: typeof ReasoningRoute
   SimulatorRoute: typeof SimulatorRoute
 }
 
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/simulator'
       fullPath: '/simulator'
       preLoaderRoute: typeof SimulatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reasoning': {
+      id: '/reasoning'
+      path: '/reasoning'
+      fullPath: '/reasoning'
+      preLoaderRoute: typeof ReasoningRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/missions': {
@@ -203,6 +223,7 @@ const rootRouteChildren: RootRouteChildren = {
   MapRoute: MapRoute,
   MemoryRoute: MemoryRoute,
   MissionsRoute: MissionsRoute,
+  ReasoningRoute: ReasoningRoute,
   SimulatorRoute: SimulatorRoute,
 }
 export const routeTree = rootRouteImport
