@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as MissionsRouteImport } from './routes/missions'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as FeedRouteImport } from './routes/feed'
 import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -30,6 +31,11 @@ const KnowledgeRoute = KnowledgeRouteImport.update({
   path: '/knowledge',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AgentsRoute = AgentsRouteImport.update({
   id: '/agents',
   path: '/agents',
@@ -44,6 +50,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agents': typeof AgentsRoute
+  '/feed': typeof FeedRoute
   '/knowledge': typeof KnowledgeRoute
   '/map': typeof MapRoute
   '/missions': typeof MissionsRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agents': typeof AgentsRoute
+  '/feed': typeof FeedRoute
   '/knowledge': typeof KnowledgeRoute
   '/map': typeof MapRoute
   '/missions': typeof MissionsRoute
@@ -59,21 +67,30 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/agents': typeof AgentsRoute
+  '/feed': typeof FeedRoute
   '/knowledge': typeof KnowledgeRoute
   '/map': typeof MapRoute
   '/missions': typeof MissionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/agents' | '/knowledge' | '/map' | '/missions'
+  fullPaths: '/' | '/agents' | '/feed' | '/knowledge' | '/map' | '/missions'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/agents' | '/knowledge' | '/map' | '/missions'
-  id: '__root__' | '/' | '/agents' | '/knowledge' | '/map' | '/missions'
+  to: '/' | '/agents' | '/feed' | '/knowledge' | '/map' | '/missions'
+  id:
+    | '__root__'
+    | '/'
+    | '/agents'
+    | '/feed'
+    | '/knowledge'
+    | '/map'
+    | '/missions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgentsRoute: typeof AgentsRoute
+  FeedRoute: typeof FeedRoute
   KnowledgeRoute: typeof KnowledgeRoute
   MapRoute: typeof MapRoute
   MissionsRoute: typeof MissionsRoute
@@ -102,6 +119,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KnowledgeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/agents': {
       id: '/agents'
       path: '/agents'
@@ -122,6 +146,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgentsRoute: AgentsRoute,
+  FeedRoute: FeedRoute,
   KnowledgeRoute: KnowledgeRoute,
   MapRoute: MapRoute,
   MissionsRoute: MissionsRoute,
