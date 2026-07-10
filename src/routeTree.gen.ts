@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SimulatorRouteImport } from './routes/simulator'
 import { Route as MissionsRouteImport } from './routes/missions'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as KnowledgeRouteImport } from './routes/knowledge'
@@ -16,6 +17,11 @@ import { Route as FeedRouteImport } from './routes/feed'
 import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SimulatorRoute = SimulatorRouteImport.update({
+  id: '/simulator',
+  path: '/simulator',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MissionsRoute = MissionsRouteImport.update({
   id: '/missions',
   path: '/missions',
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/knowledge': typeof KnowledgeRoute
   '/map': typeof MapRoute
   '/missions': typeof MissionsRoute
+  '/simulator': typeof SimulatorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/knowledge': typeof KnowledgeRoute
   '/map': typeof MapRoute
   '/missions': typeof MissionsRoute
+  '/simulator': typeof SimulatorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,12 +79,27 @@ export interface FileRoutesById {
   '/knowledge': typeof KnowledgeRoute
   '/map': typeof MapRoute
   '/missions': typeof MissionsRoute
+  '/simulator': typeof SimulatorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/agents' | '/feed' | '/knowledge' | '/map' | '/missions'
+  fullPaths:
+    | '/'
+    | '/agents'
+    | '/feed'
+    | '/knowledge'
+    | '/map'
+    | '/missions'
+    | '/simulator'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/agents' | '/feed' | '/knowledge' | '/map' | '/missions'
+  to:
+    | '/'
+    | '/agents'
+    | '/feed'
+    | '/knowledge'
+    | '/map'
+    | '/missions'
+    | '/simulator'
   id:
     | '__root__'
     | '/'
@@ -85,6 +108,7 @@ export interface FileRouteTypes {
     | '/knowledge'
     | '/map'
     | '/missions'
+    | '/simulator'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -94,10 +118,18 @@ export interface RootRouteChildren {
   KnowledgeRoute: typeof KnowledgeRoute
   MapRoute: typeof MapRoute
   MissionsRoute: typeof MissionsRoute
+  SimulatorRoute: typeof SimulatorRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/simulator': {
+      id: '/simulator'
+      path: '/simulator'
+      fullPath: '/simulator'
+      preLoaderRoute: typeof SimulatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/missions': {
       id: '/missions'
       path: '/missions'
@@ -150,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   KnowledgeRoute: KnowledgeRoute,
   MapRoute: MapRoute,
   MissionsRoute: MissionsRoute,
+  SimulatorRoute: SimulatorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
