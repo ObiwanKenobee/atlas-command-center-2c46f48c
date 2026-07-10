@@ -9,8 +9,68 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SimulatorRouteImport } from './routes/simulator'
+import { Route as ReasoningRouteImport } from './routes/reasoning'
+import { Route as MissionsRouteImport } from './routes/missions'
+import { Route as MemoryRouteImport } from './routes/memory'
+import { Route as MapRouteImport } from './routes/map'
+import { Route as KnowledgeRouteImport } from './routes/knowledge'
+import { Route as GovernanceRouteImport } from './routes/governance'
+import { Route as FeedRouteImport } from './routes/feed'
+import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SimulatorRoute = SimulatorRouteImport.update({
+  id: '/simulator',
+  path: '/simulator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReasoningRoute = ReasoningRouteImport.update({
+  id: '/reasoning',
+  path: '/reasoning',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MissionsRoute = MissionsRouteImport.update({
+  id: '/missions',
+  path: '/missions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MemoryRoute = MemoryRouteImport.update({
+  id: '/memory',
+  path: '/memory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MapRoute = MapRouteImport.update({
+  id: '/map',
+  path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KnowledgeRoute = KnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GovernanceRoute = GovernanceRouteImport.update({
+  id: '/governance',
+  path: '/governance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsRoute = AgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +79,172 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agents': typeof AgentsRoute
+  '/feed': typeof FeedRoute
+  '/governance': typeof GovernanceRoute
+  '/knowledge': typeof KnowledgeRoute
+  '/map': typeof MapRoute
+  '/memory': typeof MemoryRoute
+  '/missions': typeof MissionsRoute
+  '/reasoning': typeof ReasoningRoute
+  '/simulator': typeof SimulatorRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agents': typeof AgentsRoute
+  '/feed': typeof FeedRoute
+  '/governance': typeof GovernanceRoute
+  '/knowledge': typeof KnowledgeRoute
+  '/map': typeof MapRoute
+  '/memory': typeof MemoryRoute
+  '/missions': typeof MissionsRoute
+  '/reasoning': typeof ReasoningRoute
+  '/simulator': typeof SimulatorRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agents': typeof AgentsRoute
+  '/feed': typeof FeedRoute
+  '/governance': typeof GovernanceRoute
+  '/knowledge': typeof KnowledgeRoute
+  '/map': typeof MapRoute
+  '/memory': typeof MemoryRoute
+  '/missions': typeof MissionsRoute
+  '/reasoning': typeof ReasoningRoute
+  '/simulator': typeof SimulatorRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/agents'
+    | '/feed'
+    | '/governance'
+    | '/knowledge'
+    | '/map'
+    | '/memory'
+    | '/missions'
+    | '/reasoning'
+    | '/simulator'
+    | '/sitemap.xml'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/agents'
+    | '/feed'
+    | '/governance'
+    | '/knowledge'
+    | '/map'
+    | '/memory'
+    | '/missions'
+    | '/reasoning'
+    | '/simulator'
+    | '/sitemap.xml'
+  id:
+    | '__root__'
+    | '/'
+    | '/agents'
+    | '/feed'
+    | '/governance'
+    | '/knowledge'
+    | '/map'
+    | '/memory'
+    | '/missions'
+    | '/reasoning'
+    | '/simulator'
+    | '/sitemap.xml'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgentsRoute: typeof AgentsRoute
+  FeedRoute: typeof FeedRoute
+  GovernanceRoute: typeof GovernanceRoute
+  KnowledgeRoute: typeof KnowledgeRoute
+  MapRoute: typeof MapRoute
+  MemoryRoute: typeof MemoryRoute
+  MissionsRoute: typeof MissionsRoute
+  ReasoningRoute: typeof ReasoningRoute
+  SimulatorRoute: typeof SimulatorRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/simulator': {
+      id: '/simulator'
+      path: '/simulator'
+      fullPath: '/simulator'
+      preLoaderRoute: typeof SimulatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reasoning': {
+      id: '/reasoning'
+      path: '/reasoning'
+      fullPath: '/reasoning'
+      preLoaderRoute: typeof ReasoningRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/missions': {
+      id: '/missions'
+      path: '/missions'
+      fullPath: '/missions'
+      preLoaderRoute: typeof MissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/memory': {
+      id: '/memory'
+      path: '/memory'
+      fullPath: '/memory'
+      preLoaderRoute: typeof MemoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/map': {
+      id: '/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/knowledge': {
+      id: '/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof KnowledgeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/governance': {
+      id: '/governance'
+      path: '/governance'
+      fullPath: '/governance'
+      preLoaderRoute: typeof GovernanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents': {
+      id: '/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AgentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +257,17 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgentsRoute: AgentsRoute,
+  FeedRoute: FeedRoute,
+  GovernanceRoute: GovernanceRoute,
+  KnowledgeRoute: KnowledgeRoute,
+  MapRoute: MapRoute,
+  MemoryRoute: MemoryRoute,
+  MissionsRoute: MissionsRoute,
+  ReasoningRoute: ReasoningRoute,
+  SimulatorRoute: SimulatorRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
