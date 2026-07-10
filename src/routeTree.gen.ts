@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SimulatorRouteImport } from './routes/simulator'
 import { Route as MissionsRouteImport } from './routes/missions'
+import { Route as MemoryRouteImport } from './routes/memory'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as KnowledgeRouteImport } from './routes/knowledge'
 import { Route as FeedRouteImport } from './routes/feed'
@@ -25,6 +26,11 @@ const SimulatorRoute = SimulatorRouteImport.update({
 const MissionsRoute = MissionsRouteImport.update({
   id: '/missions',
   path: '/missions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MemoryRoute = MemoryRouteImport.update({
+  id: '/memory',
+  path: '/memory',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MapRoute = MapRouteImport.update({
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/feed': typeof FeedRoute
   '/knowledge': typeof KnowledgeRoute
   '/map': typeof MapRoute
+  '/memory': typeof MemoryRoute
   '/missions': typeof MissionsRoute
   '/simulator': typeof SimulatorRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/feed': typeof FeedRoute
   '/knowledge': typeof KnowledgeRoute
   '/map': typeof MapRoute
+  '/memory': typeof MemoryRoute
   '/missions': typeof MissionsRoute
   '/simulator': typeof SimulatorRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/feed': typeof FeedRoute
   '/knowledge': typeof KnowledgeRoute
   '/map': typeof MapRoute
+  '/memory': typeof MemoryRoute
   '/missions': typeof MissionsRoute
   '/simulator': typeof SimulatorRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/knowledge'
     | '/map'
+    | '/memory'
     | '/missions'
     | '/simulator'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/knowledge'
     | '/map'
+    | '/memory'
     | '/missions'
     | '/simulator'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/feed'
     | '/knowledge'
     | '/map'
+    | '/memory'
     | '/missions'
     | '/simulator'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   FeedRoute: typeof FeedRoute
   KnowledgeRoute: typeof KnowledgeRoute
   MapRoute: typeof MapRoute
+  MemoryRoute: typeof MemoryRoute
   MissionsRoute: typeof MissionsRoute
   SimulatorRoute: typeof SimulatorRoute
 }
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/missions'
       fullPath: '/missions'
       preLoaderRoute: typeof MissionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/memory': {
+      id: '/memory'
+      path: '/memory'
+      fullPath: '/memory'
+      preLoaderRoute: typeof MemoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/map': {
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   FeedRoute: FeedRoute,
   KnowledgeRoute: KnowledgeRoute,
   MapRoute: MapRoute,
+  MemoryRoute: MemoryRoute,
   MissionsRoute: MissionsRoute,
   SimulatorRoute: SimulatorRoute,
 }
