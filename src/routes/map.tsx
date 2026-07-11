@@ -27,18 +27,42 @@ const LAYERS = [
   { id: "humanitarian", name: "Humanitarian", tone: "warn" as const, count: 12 },
 ];
 
-// Fixed pins so the demo is stable
-const PINS = [
-  { x: 22, y: 42, type: "disasters", label: "Wildfire cluster · Iberia", tone: "danger" as const },
-  { x: 55, y: 30, type: "weather", label: "Anticyclone · Siberia", tone: "muted" as const },
-  { x: 70, y: 55, type: "food", label: "Yield anomaly · S. Asia", tone: "warn" as const },
-  { x: 40, y: 65, type: "restoration", label: "Congo restoration node", tone: "ok" as const },
-  { x: 82, y: 72, type: "biodiversity", label: "Reef sensor grid", tone: "ok" as const },
-  { x: 18, y: 70, type: "humanitarian", label: "Corridor · Amazon E", tone: "warn" as const },
-  { x: 30, y: 30, type: "energy", label: "Grid balancing · EU-N", tone: "primary" as const },
-  { x: 64, y: 45, type: "disasters", label: "Flood advisory · Indus", tone: "danger" as const },
-  { x: 12, y: 45, type: "logistics", label: "Port congestion · NY", tone: "primary" as const },
-  { x: 88, y: 40, type: "infra", label: "Data center uplink", tone: "primary" as const },
+type Pin = {
+  x: number; y: number; type: string; label: string; tone: "danger" | "warn" | "ok" | "primary" | "muted";
+  kind: string; detail: string; source: string;
+};
+
+const PINS: Pin[] = [
+  { x: 22, y: 42, type: "disasters", label: "Wildfire cluster · Iberia", tone: "danger",
+    kind: "ADVISORY", source: "Sentinel-2 · 2 hr ago",
+    detail: "Cluster contained at 78%. Sentinel + Logistics coordinating suppression corridors." },
+  { x: 55, y: 30, type: "weather", label: "Anticyclone · Siberia", tone: "muted",
+    kind: "FORECAST", source: "ECMWF · 1 hr ago",
+    detail: "Blocking pattern persistent 5–7 days. Downstream jet displacement flagged." },
+  { x: 70, y: 55, type: "food", label: "Yield anomaly · S. Asia", tone: "warn",
+    kind: "FORECAST", source: "Agriculture · 6 hr ago",
+    detail: "Precipitation deficit projected. Restoration + Economics drafting mitigation envelope." },
+  { x: 40, y: 65, type: "restoration", label: "Congo restoration node", tone: "ok",
+    kind: "MISSION", source: "Restoration · active",
+    detail: "Phase 2 planting on schedule. Soil carbon +0.4% quarter-over-quarter." },
+  { x: 82, y: 72, type: "biodiversity", label: "Reef sensor grid", tone: "ok",
+    kind: "TRACE", source: "Ocean mesh · live",
+    detail: "Thermal delta within tolerance. Bleaching risk index 0.18." },
+  { x: 18, y: 70, type: "humanitarian", label: "Corridor · Amazon E", tone: "warn",
+    kind: "MISSION", source: "Humanitarian · staging",
+    detail: "Displacement risk medium. Two staging depots online, third pending." },
+  { x: 30, y: 30, type: "energy", label: "Grid balancing · EU-N", tone: "primary",
+    kind: "TRACE", source: "Energy · live",
+    detail: "Frequency delta < 0.02 Hz. Auto-stabilizing via demand-response protocol 14." },
+  { x: 64, y: 45, type: "disasters", label: "Flood advisory · Indus", tone: "danger",
+    kind: "ADVISORY", source: "Sentinel · 20 min ago",
+    detail: "Basin 07 signal escalated to L2. Reservoir at 12% headroom." },
+  { x: 12, y: 45, type: "logistics", label: "Port congestion · NY", tone: "primary",
+    kind: "LOGISTICS", source: "Logistics · live",
+    detail: "Congestion index 0.71. Reroute envelope C+ prepared, awaiting operator." },
+  { x: 88, y: 40, type: "infra", label: "Data center uplink", tone: "primary",
+    kind: "INFRA", source: "Infrastructure · live",
+    detail: "Uplink stable, packet loss 0.01%. Failover ready." },
 ];
 
 function LivingMap() {
