@@ -146,16 +146,23 @@ function SanctumMark() {
 
 function Ticker() {
   const events = useLiveEvents();
+  const status = useLiveStatus();
   const items = events.slice(0, 12).map((e) => `${e.time} · ${e.kind} · ${e.title}`);
   const stream = items.length ? [...items, ...items] : ["Awaiting uplink…"];
+  const badge =
+    status === "live" ? { cls: "bg-ok text-ok/80", label: "WS · LIVE" } :
+    status === "connecting" ? { cls: "bg-primary text-primary/80", label: "WS · CONNECTING" } :
+    status === "simulated" ? { cls: "bg-accent text-accent/80", label: "WS · SIM" } :
+    status === "error" ? { cls: "bg-danger text-danger/80", label: "WS · RETRY" } :
+    { cls: "bg-border-strong text-muted-foreground", label: "WS · IDLE" };
   return (
     <div className="relative flex-1 overflow-hidden">
       <div className="flex items-center gap-2 mr-3 shrink-0">
         <span className="relative flex h-1.5 w-1.5">
-          <span className="absolute inset-0 rounded-full bg-ok animate-ping opacity-60" />
-          <span className="relative h-1.5 w-1.5 rounded-full bg-ok" />
+          <span className={"absolute inset-0 rounded-full animate-ping opacity-60 " + badge.cls.split(" ")[0]} />
+          <span className={"relative h-1.5 w-1.5 rounded-full " + badge.cls.split(" ")[0]} />
         </span>
-        <span className="mono text-[10px] uppercase text-ok/80">WS · LIVE</span>
+        <span className={"mono text-[10px] uppercase " + badge.cls.split(" ")[1]}>{badge.label}</span>
       </div>
       <div className="flex gap-8 whitespace-nowrap" style={{ animation: "ticker 90s linear infinite" }}>
         {stream.map((t, i) => (
