@@ -87,18 +87,93 @@ const STREAM: Array<Omit<LiveEvent, "id" | "time">> = [
   { kind: "TASK", title: "Sentinel confirmed flood tile · Indus", source: "Sentinel", tone: "ok" },
 ];
 
+export type LiveStatus = "idle" | "connecting" | "live" | "simulated" | "error";
+let status: LiveStatus = "idle";
+export const getLiveStatus = () => status;
+function setStatus(s: LiveStatus) { status = s; emit(); }
+
 let started = false;
-export function startLiveStream() {
-  if (started || typeof window === "undefined") return;
-  started = true;
+let simTimeout: number | undefined;
+let simInterval: number | undefined;
+let ws: WebSocket | undefined;
+let reconnectTimer: number | undefined;
+let reconnectAttempt = 0;
+
+function startSimulator() {
+  if (simInterval) return;
+  setStatus("simulated");
   const tick = () => {
     const e = STREAM[Math.floor(Math.random() * STREAM.length)];
     liveStore.pushEvent(e);
   };
-  // First push shortly after mount, then every 5–9s.
-  window.setTimeout(tick, 2500);
-  window.setInterval(tick, 6000);
+  simTimeout = window.setTimeout(tick, 2500);
+  simInterval = window.setInterval(tick, 6000);
 }
+function stopSimulator() {
+  if (simTimeout) { window.clearTimeout(simTimeout); simTimeout = undefined; }
+  if (simInterval) { window.clearInterval(simInterval); simInterval = undefined; }
+}
+
+function connectWs(url: string) {
+  setStatus("connecting");
+  try {
+    ws = new WebSocket(url);
+  } catch {
+    setStatus("error");
+    startSimulator();
+    return;
+  }
+  ws.addEventListener("open", () => {
+    reconnectAttempt = 0;
+    stopSimulator();
+    setStatus("live");
+  });
+  ws.addEventListener("message", (ev) => {
+    try {
+      const msg = JSON.parse(typeof ev.data === "string" ? ev.data : "");
+      if (msg && typeof msg === "object" && "title" in msg && "kind" in msg) {
+        liveStore.pushEvent({
+          kind: String(msg.kind),
+          title: String(msg.title),
+          source: String(msg.source ?? "uplink"),
+          tone: (msg.tone ?? "primary") as Tone,
+          time: msg.time,
+        });
+      }
+    } catch { /* ignore malformed frames */ }
+  });
+  ws.addEventListener("close", () => {
+    setStatus("error");
+    // Exponential backoff up to 30s, then fall back to simulator meanwhile.
+    startSimulator();
+    reconnectAttempt = Math.min(reconnectAttempt + 1, 6);
+    const delay = Math.min(30_000, 1000 * 2 ** reconnectAttempt);
+    reconnectTimer = window.setTimeout(() => connectWs(url), delay);
+  });
+  ws.addEventListener("error", () => { try { ws?.close(); } catch { /* noop */ } });
+}
+
+export function startLiveStream() {
+  if (started || typeof window === "undefined") return;
+  started = true;
+  const url = (import.meta.env.VITE_SANCTUM_WS_URL as string | undefined)?.trim();
+  if (url) connectWs(url);
+  else startSimulator();
+}
+
+export function stopLiveStream() {
+  stopSimulator();
+  if (reconnectTimer) window.clearTimeout(reconnectTimer);
+  try { ws?.close(); } catch { /* noop */ }
+  ws = undefined;
+  started = false;
+  setStatus("idle");
+}
+
+export function useLiveStatus(): LiveStatus {
+  return useSyncExternalStore(liveStore.subscribe, getLiveStatus, getLiveStatus);
+}
+
 
 export function useLiveEvents(): LiveEvent[] {
   return useSyncExternalStore(liveStore.subscribe, liveStore.getEvents, liveStore.getEvents);

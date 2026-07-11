@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Panel, Chip, Dot, ProgressBar } from "@/components/panel";
 import { liveStore, useLiveAudit } from "@/lib/live-store";
@@ -118,23 +118,117 @@ function Governance() {
           </table>
         </Panel>
 
-        <Panel title="Audit Log" code="AUD">
-          <ul className="text-sm divide-y divide-border">
-            {audit.map((a) => (
-              <li key={a.id} className="grid grid-cols-[80px_1fr_auto] gap-3 py-2 items-center animate-in fade-in slide-in-from-top-1 duration-500">
-                <span className="mono text-[11px] text-muted-foreground">{a.t}</span>
-                <div>
-                  <span className="mono text-[10px] text-primary">{a.who}</span>
-                  <span className="text-muted-foreground"> {a.act} </span>
-                  <span>{a.tgt}</span>
-                </div>
-                <Dot tone={a.who.startsWith("OP") ? "ok" : "primary"} />
-              </li>
-            ))}
-          </ul>
-        </Panel>
+        <AuditPanel audit={audit} />
       </div>
     </AppShell>
+  );
+}
+
+function AuditPanel({ audit }: { audit: ReturnType<typeof useLiveAudit> }) {
+  const [q, setQ] = useState("");
+  const [who, setWho] = useState("All");
+  const [act, setAct] = useState("All");
+  const [dir, setDir] = useState<"desc" | "asc">("desc");
+
+  const whos = useMemo(() => ["All", ...Array.from(new Set(audit.map((a) => a.who))).sort()], [audit]);
+  const acts = useMemo(() => ["All", ...Array.from(new Set(audit.map((a) => a.act))).sort()], [audit]);
+
+  const rows = useMemo(() => {
+    const query = q.trim().toLowerCase();
+    const filtered = audit.filter((a) => {
+      if (who !== "All" && a.who !== who) return false;
+      if (act !== "All" && a.act !== act) return false;
+      if (query && !`${a.who} ${a.act} ${a.tgt} ${a.t}`.toLowerCase().includes(query)) return false;
+      return true;
+    });
+    const sorted = [...filtered].sort((a, b) => (a.t < b.t ? -1 : a.t > b.t ? 1 : 0));
+    return dir === "desc" ? sorted.reverse() : sorted;
+  }, [audit, q, who, act, dir]);
+
+  function exportCsv() {
+    const header = ["timestamp", "who", "action", "target"];
+    const esc = (s: string) => `"${s.replace(/"/g, '""')}"`;
+    const body = rows.map((a) => [a.t, a.who, a.act, a.tgt].map(esc).join(","));
+    const csv = [header.join(","), ...body].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `sanctum-audit-${stamp}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  return (
+    <Panel
+      title="Audit Log"
+      code="AUD"
+      className="lg:col-span-2"
+      actions={
+        <div className="flex items-center gap-2">
+          <Chip tone="muted">{rows.length} / {audit.length}</Chip>
+          <button
+            onClick={exportCsv}
+            disabled={rows.length === 0}
+            className="mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-sm border border-primary/60 text-primary hover:bg-primary/10 disabled:opacity-40 disabled:hover:bg-transparent"
+          >
+            export CSV
+          </button>
+        </div>
+      }
+    >
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <input
+          type="search"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search audit entries…"
+          className="flex-1 min-w-[180px] panel-inset px-2.5 py-1.5 text-sm bg-transparent outline-none focus:border-primary/60"
+        />
+        <select value={who} onChange={(e) => setWho(e.target.value)}
+          className="panel-inset px-2 py-1.5 text-[12px] bg-transparent outline-none focus:border-primary/60">
+          {whos.map((w) => <option key={w} value={w} className="bg-panel">who: {w}</option>)}
+        </select>
+        <select value={act} onChange={(e) => setAct(e.target.value)}
+          className="panel-inset px-2 py-1.5 text-[12px] bg-transparent outline-none focus:border-primary/60">
+          {acts.map((a) => <option key={a} value={a} className="bg-panel">action: {a}</option>)}
+        </select>
+      </div>
+
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="label-eyebrow border-b border-border text-left">
+            <th className="py-2 font-normal w-24">
+              <button onClick={() => setDir((d) => d === "desc" ? "asc" : "desc")}
+                className="inline-flex items-center gap-1 hover:text-primary">
+                Time <span className="mono text-[9px]">{dir === "desc" ? "↓" : "↑"}</span>
+              </button>
+            </th>
+            <th className="py-2 font-normal">Actor</th>
+            <th className="py-2 font-normal">Action</th>
+            <th className="py-2 font-normal">Target</th>
+            <th className="py-2 font-normal w-6"></th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border">
+          {rows.length === 0 && (
+            <tr><td colSpan={5} className="py-6 text-center text-muted-foreground text-sm">No entries match.</td></tr>
+          )}
+          {rows.map((a) => (
+            <tr key={a.id} className="animate-in fade-in slide-in-from-top-1 duration-500">
+              <td className="py-2 mono text-[11px] text-muted-foreground align-top">{a.t}</td>
+              <td className="py-2 mono text-[10px] text-primary align-top">{a.who}</td>
+              <td className="py-2 text-muted-foreground align-top">{a.act}</td>
+              <td className="py-2 align-top">{a.tgt}</td>
+              <td className="py-2 align-top"><Dot tone={a.who.startsWith("OP") ? "ok" : "primary"} /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </Panel>
   );
 }
 
