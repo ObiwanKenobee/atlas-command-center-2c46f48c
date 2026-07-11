@@ -145,19 +145,19 @@ function SanctumMark() {
 }
 
 function Ticker() {
-  const items = [
-    "IPCC WG2 delta ingested",
-    "Sentinel-2 tile 34UEV updated",
-    "Hydrology model retrained · +2.1% skill",
-    "Agent Restoration flagged Basin 07",
-    "Policy draft #A-19 awaits review",
-    "Grid frequency Europe · 49.99 Hz",
-    "Wildfire cluster Iberia · contained",
-  ];
-  const stream = [...items, ...items];
+  const events = useLiveEvents();
+  const items = events.slice(0, 12).map((e) => `${e.time} · ${e.kind} · ${e.title}`);
+  const stream = items.length ? [...items, ...items] : ["Awaiting uplink…"];
   return (
     <div className="relative flex-1 overflow-hidden">
-      <div className="flex gap-8 whitespace-nowrap" style={{ animation: "ticker 60s linear infinite" }}>
+      <div className="flex items-center gap-2 mr-3 shrink-0">
+        <span className="relative flex h-1.5 w-1.5">
+          <span className="absolute inset-0 rounded-full bg-ok animate-ping opacity-60" />
+          <span className="relative h-1.5 w-1.5 rounded-full bg-ok" />
+        </span>
+        <span className="mono text-[10px] uppercase text-ok/80">WS · LIVE</span>
+      </div>
+      <div className="flex gap-8 whitespace-nowrap" style={{ animation: "ticker 90s linear infinite" }}>
         {stream.map((t, i) => (
           <span key={i} className="inline-flex items-center gap-2">
             <span className="h-1 w-1 rounded-full bg-primary" />
@@ -170,6 +170,18 @@ function Ticker() {
 }
 
 function ClockUTC() {
-  // Server-safe: static-looking clock (no hydration mismatch, just decorative)
-  return <span className="mono text-[11px] text-muted-foreground">UTC 14:22:07</span>;
+  const [now, setNow] = useState<string>("UTC --:--:--");
+  useEffect(() => {
+    const fmt = () => {
+      const d = new Date();
+      const h = String(d.getUTCHours()).padStart(2, "0");
+      const m = String(d.getUTCMinutes()).padStart(2, "0");
+      const s = String(d.getUTCSeconds()).padStart(2, "0");
+      setNow(`UTC ${h}:${m}:${s}`);
+    };
+    fmt();
+    const id = window.setInterval(fmt, 1000);
+    return () => window.clearInterval(id);
+  }, []);
+  return <span className="mono text-[11px] text-muted-foreground">{now}</span>;
 }
