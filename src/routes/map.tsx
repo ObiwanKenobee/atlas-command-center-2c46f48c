@@ -27,42 +27,122 @@ const LAYERS = [
   { id: "humanitarian", name: "Humanitarian", tone: "warn" as const, count: 12 },
 ];
 
+type Evidence = { id: string; label: string; kind: "dataset" | "report" | "sensor" | "model"; href: string };
+type Mission = { id: string; name: string; status: "active" | "planning" | "review"; agent: string };
+
 type Pin = {
   x: number; y: number; type: string; label: string; tone: "danger" | "warn" | "ok" | "primary" | "muted";
   kind: string; detail: string; source: string;
+  evidence: Evidence[];
+  missions: Mission[];
 };
 
 const PINS: Pin[] = [
   { x: 22, y: 42, type: "disasters", label: "Wildfire cluster · Iberia", tone: "danger",
     kind: "ADVISORY", source: "Sentinel-2 · 2 hr ago",
-    detail: "Cluster contained at 78%. Sentinel + Logistics coordinating suppression corridors." },
+    detail: "Cluster contained at 78%. Sentinel + Logistics coordinating suppression corridors.",
+    evidence: [
+      { id: "e1", label: "Sentinel-2 tile 29TNE · thermal", kind: "sensor", href: "#/knowledge?tile=29TNE" },
+      { id: "e2", label: "MODIS active-fire scan 14:02Z", kind: "dataset", href: "#/knowledge?ds=modis-af" },
+      { id: "e3", label: "Iberia wind-field model H14", kind: "model", href: "#/reasoning?model=H14" },
+    ],
+    missions: [
+      { id: "m-ib-1", name: "Iberia suppression corridor A", status: "active", agent: "Logistics" },
+      { id: "m-ib-2", name: "Evac readiness · Zone S-3", status: "planning", agent: "Humanitarian" },
+    ] },
   { x: 55, y: 30, type: "weather", label: "Anticyclone · Siberia", tone: "muted",
     kind: "FORECAST", source: "ECMWF · 1 hr ago",
-    detail: "Blocking pattern persistent 5–7 days. Downstream jet displacement flagged." },
+    detail: "Blocking pattern persistent 5–7 days. Downstream jet displacement flagged.",
+    evidence: [
+      { id: "e4", label: "ECMWF ENS 51-member run", kind: "model", href: "#/reasoning?model=ecmwf-ens" },
+      { id: "e5", label: "GFS 00Z composite", kind: "dataset", href: "#/knowledge?ds=gfs-00z" },
+    ],
+    missions: [
+      { id: "m-si-1", name: "Cold-snap grid pre-stage", status: "review", agent: "Energy" },
+    ] },
   { x: 70, y: 55, type: "food", label: "Yield anomaly · S. Asia", tone: "warn",
     kind: "FORECAST", source: "Agriculture · 6 hr ago",
-    detail: "Precipitation deficit projected. Restoration + Economics drafting mitigation envelope." },
+    detail: "Precipitation deficit projected. Restoration + Economics drafting mitigation envelope.",
+    evidence: [
+      { id: "e6", label: "NDVI delta · 30-day", kind: "dataset", href: "#/knowledge?ds=ndvi-30" },
+      { id: "e7", label: "Regional yield model Y-4", kind: "model", href: "#/reasoning?model=Y4" },
+      { id: "e8", label: "Field agent reports · batch 217", kind: "report", href: "#/memory?batch=217" },
+    ],
+    missions: [
+      { id: "m-sa-1", name: "Basin 07 restoration phasing", status: "active", agent: "Restoration" },
+      { id: "m-sa-2", name: "Import corridor · Region 9", status: "planning", agent: "Economics" },
+    ] },
   { x: 40, y: 65, type: "restoration", label: "Congo restoration node", tone: "ok",
     kind: "MISSION", source: "Restoration · active",
-    detail: "Phase 2 planting on schedule. Soil carbon +0.4% quarter-over-quarter." },
+    detail: "Phase 2 planting on schedule. Soil carbon +0.4% quarter-over-quarter.",
+    evidence: [
+      { id: "e9", label: "Soil carbon panel Q3", kind: "dataset", href: "#/knowledge?ds=soc-q3" },
+      { id: "e10", label: "Community consultation notes", kind: "report", href: "#/memory?doc=consult-cg" },
+    ],
+    missions: [
+      { id: "m-cg-1", name: "Congo phase-2 planting", status: "active", agent: "Restoration" },
+    ] },
   { x: 82, y: 72, type: "biodiversity", label: "Reef sensor grid", tone: "ok",
     kind: "TRACE", source: "Ocean mesh · live",
-    detail: "Thermal delta within tolerance. Bleaching risk index 0.18." },
+    detail: "Thermal delta within tolerance. Bleaching risk index 0.18.",
+    evidence: [
+      { id: "e11", label: "Reef mesh telemetry · 24h", kind: "sensor", href: "#/knowledge?sensor=reef-24" },
+    ],
+    missions: [
+      { id: "m-rf-1", name: "Reef monitoring cadence", status: "active", agent: "Knowledge" },
+    ] },
   { x: 18, y: 70, type: "humanitarian", label: "Corridor · Amazon E", tone: "warn",
     kind: "MISSION", source: "Humanitarian · staging",
-    detail: "Displacement risk medium. Two staging depots online, third pending." },
+    detail: "Displacement risk medium. Two staging depots online, third pending.",
+    evidence: [
+      { id: "e12", label: "Impacted community registry", kind: "report", href: "#/memory?doc=icr" },
+      { id: "e13", label: "Logistics ETA envelope", kind: "model", href: "#/reasoning?model=eta-b" },
+    ],
+    missions: [
+      { id: "m-am-1", name: "Amazon E depot ramp-up", status: "active", agent: "Humanitarian" },
+      { id: "m-am-2", name: "Ethics review · reroute impact", status: "review", agent: "Ethics" },
+    ] },
   { x: 30, y: 30, type: "energy", label: "Grid balancing · EU-N", tone: "primary",
     kind: "TRACE", source: "Energy · live",
-    detail: "Frequency delta < 0.02 Hz. Auto-stabilizing via demand-response protocol 14." },
+    detail: "Frequency delta < 0.02 Hz. Auto-stabilizing via demand-response protocol 14.",
+    evidence: [
+      { id: "e14", label: "Grid frequency stream · EU-N", kind: "sensor", href: "#/knowledge?sensor=eu-n-freq" },
+      { id: "e15", label: "Demand-response protocol 14", kind: "report", href: "#/memory?doc=dr14" },
+    ],
+    missions: [
+      { id: "m-eu-1", name: "EU-N stability watch", status: "active", agent: "Energy" },
+    ] },
   { x: 64, y: 45, type: "disasters", label: "Flood advisory · Indus", tone: "danger",
     kind: "ADVISORY", source: "Sentinel · 20 min ago",
-    detail: "Basin 07 signal escalated to L2. Reservoir at 12% headroom." },
+    detail: "Basin 07 signal escalated to L2. Reservoir at 12% headroom.",
+    evidence: [
+      { id: "e16", label: "Hydrology model H14", kind: "model", href: "#/reasoning?model=H14" },
+      { id: "e17", label: "Sentinel-2 tile 34UEV", kind: "sensor", href: "#/knowledge?tile=34UEV" },
+      { id: "e18", label: "Ground sensor mesh 7", kind: "sensor", href: "#/knowledge?sensor=gsm-7" },
+    ],
+    missions: [
+      { id: "m-in-1", name: "Basin 07 restoration phasing", status: "active", agent: "Restoration" },
+      { id: "m-in-2", name: "Reservoir capacity expansion · +15%", status: "planning", agent: "Economics" },
+    ] },
   { x: 12, y: 45, type: "logistics", label: "Port congestion · NY", tone: "primary",
     kind: "LOGISTICS", source: "Logistics · live",
-    detail: "Congestion index 0.71. Reroute envelope C+ prepared, awaiting operator." },
+    detail: "Congestion index 0.71. Reroute envelope C+ prepared, awaiting operator.",
+    evidence: [
+      { id: "e19", label: "Port congestion index", kind: "dataset", href: "#/knowledge?ds=port-idx" },
+      { id: "e20", label: "72h weather forecast", kind: "model", href: "#/reasoning?model=wx-72" },
+    ],
+    missions: [
+      { id: "m-ny-1", name: "Corridor B → C reroute", status: "review", agent: "Logistics" },
+    ] },
   { x: 88, y: 40, type: "infra", label: "Data center uplink", tone: "primary",
     kind: "INFRA", source: "Infrastructure · live",
-    detail: "Uplink stable, packet loss 0.01%. Failover ready." },
+    detail: "Uplink stable, packet loss 0.01%. Failover ready.",
+    evidence: [
+      { id: "e21", label: "Uplink telemetry · 24h", kind: "sensor", href: "#/knowledge?sensor=uplink-24" },
+    ],
+    missions: [
+      { id: "m-dc-1", name: "Failover drill · Q3", status: "planning", agent: "Infrastructure" },
+    ] },
 ];
 
 function LivingMap() {
