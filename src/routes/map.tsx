@@ -351,3 +351,13 @@ function toneBg(t: string) {
     danger: "bg-danger", warn: "bg-accent", ok: "bg-ok", primary: "bg-primary", muted: "bg-border-strong",
   }[t] || "bg-primary";
 }
+
+function EvidenceGlyph({ kind }: { kind: Evidence["kind"] }) {
+  const map: Record<Evidence["kind"], string> = {
+    dataset: "▤",
+    report: "▢",
+    sensor: "◉",
+    model: "△",
+  };
+  return <span className="mono text-[11px] text-primary/80 w-3 inline-block">{map[kind]}</span>;
+}
