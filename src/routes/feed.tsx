@@ -31,19 +31,28 @@ function Feed() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
         <Panel title="Intelligence Stream" code="INT"
           actions={
-            <div className="flex flex-wrap gap-1">
-              {FILTERS.map((f) => (
-                <button key={f} onClick={() => setFilter(f)}
-                  className={"mono text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm border " +
-                    (filter === f ? "border-primary/60 text-primary bg-primary/10" : "border-border hover:border-border-strong")}>
-                  {f}
-                </button>
-              ))}
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1.5">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inset-0 rounded-full bg-ok animate-ping opacity-60" />
+                  <span className="relative h-1.5 w-1.5 rounded-full bg-ok" />
+                </span>
+                <span className="mono text-[10px] uppercase text-ok/80">WS · LIVE</span>
+              </span>
+              <div className="flex flex-wrap gap-1">
+                {FILTERS.map((f) => (
+                  <button key={f} onClick={() => setFilter(f)}
+                    className={"mono text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm border " +
+                      (filter === f ? "border-primary/60 text-primary bg-primary/10" : "border-border hover:border-border-strong")}>
+                    {f}
+                  </button>
+                ))}
+              </div>
             </div>
           }>
           <ol className="relative">
-            {items.map((e, i) => (
-              <li key={i} className="grid grid-cols-[60px_16px_1fr_auto] items-start gap-3 py-2 border-b border-border last:border-b-0">
+            {items.map((e) => (
+              <li key={e.id} className="grid grid-cols-[60px_16px_1fr_auto] items-start gap-3 py-2 border-b border-border last:border-b-0 animate-in fade-in slide-in-from-top-1 duration-500">
                 <span className="mono text-[11px] text-muted-foreground pt-1">{e.time}</span>
                 <span className="pt-1"><Dot tone={e.tone} /></span>
                 <div className="min-w-0">
@@ -59,12 +68,13 @@ function Feed() {
         <div className="space-y-4">
           <Panel title="Stream Vitals" code="VIT">
             <div className="space-y-2 text-sm">
-              <Row label="Events / min" value="34" />
-              <Row label="Anomalies · 1h" value="6" tone="warn" />
-              <Row label="Tasks completed · 1h" value="21" tone="ok" />
-              <Row label="Approvals pending" value="2" tone="primary" />
+              <Row label="Events buffered" value={String(events.length)} />
+              <Row label="Anomalies" value={String(anomalies)} tone="warn" />
+              <Row label="Tasks completed" value={String(tasks)} tone="ok" />
+              <Row label="Approvals" value={String(approvals)} tone="primary" />
             </div>
           </Panel>
+
 
           <Panel title="Subscriptions" code="SUB">
             <ul className="text-sm space-y-2">
