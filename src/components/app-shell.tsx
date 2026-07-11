@@ -31,6 +31,8 @@ function groupBy(items: NavItem[]) {
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const active = NAV.find((n) => (n.to === "/" ? pathname === "/" : pathname.startsWith(n.to)));
+  useEffect(() => { startLiveStream(); }, []);
+
 
   return (
     <div className="flex min-h-screen w-full text-foreground">
