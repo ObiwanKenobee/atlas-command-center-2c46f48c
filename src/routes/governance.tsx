@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Panel, Chip, Dot, ProgressBar } from "@/components/panel";
+import { liveStore, useLiveAudit } from "@/lib/live-store";
 
 export const Route = createFileRoute("/governance")({
   head: () => ({
