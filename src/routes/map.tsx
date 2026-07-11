@@ -69,6 +69,13 @@ function LivingMap() {
   const [active, setActive] = useState<Record<string, boolean>>(
     Object.fromEntries(LAYERS.map((l) => [l.id, true]))
   );
+  const [focus, setFocus] = useState<Pin | null>(null);
+  const [selected, setSelected] = useState<Pin>(PINS[0]);
+  const zoom = focus ? 3.4 : 1;
+  const scale = focus ? "REGION" : "PLANET";
+  const lat = focus ? (50 - focus.y).toFixed(2) : "00.00";
+  const lon = focus ? (focus.x - 100).toFixed(2) : "00.00";
+
 
   return (
     <AppShell>
