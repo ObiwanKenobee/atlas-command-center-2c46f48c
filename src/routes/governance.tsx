@@ -27,43 +27,55 @@ const PERMISSIONS = [
   { agent: "Health", read: true, write: true, act: false },
 ];
 
-const AUDIT = [
-  { t: "14:22:07", who: "OP", act: "approved", tgt: "Reroute · Corridor B" },
-  { t: "14:12:44", who: "SYS", act: "ingested", tgt: "Sentinel-2 tile 34UEV" },
-  { t: "13:41:02", who: "OP", act: "deferred", tgt: "Grid upgrade · Zone 4" },
-  { t: "13:18:38", who: "AGT · Sentinel", act: "escalated", tgt: "Basin 07 signal → L2" },
-  { t: "12:55:11", who: "OP", act: "ratified", tgt: "Restoration plan v3" },
-  { t: "12:04:20", who: "AGT · Ethics", act: "flagged", tgt: "Constraint drift · #A-19" },
+type Approval = { id: string; t: string; by: string; c: number };
+const INITIAL_APPROVALS: Approval[] = [
+  { id: "ap1", t: "Increase reservoir capacity · Basin 07", by: "Restoration · Economics", c: 82 },
+  { id: "ap2", t: "Reroute logistics · Corridor B → C", by: "Logistics · Sentinel", c: 74 },
+  { id: "ap3", t: "Publish policy digest #A-19", by: "Governance", c: 61 },
 ];
 
 function Governance() {
   const [perms, setPerms] = useState(PERMISSIONS);
+  const [queue, setQueue] = useState<Approval[]>(INITIAL_APPROVALS);
+  const audit = useLiveAudit();
+
+  function decide(a: Approval, action: "approved" | "rejected" | "deferred") {
+    setQueue((q) => q.filter((x) => x.id !== a.id));
+    liveStore.pushAudit({ who: "OP · L3", act: action, tgt: a.t });
+    const tone = action === "approved" ? "ok" : action === "rejected" ? "danger" : "muted";
+    const kind = action === "approved" ? "APPROVED" : action === "rejected" ? "REJECTED" : "DECISION";
+    liveStore.pushEvent({ kind, tone, title: `Operator ${action} · ${a.t}`, source: a.by });
+  }
+
   return (
     <AppShell>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Panel title="Approvals queue" code="APV" actions={<Chip tone="primary">3 pending</Chip>}>
-          <ul className="space-y-3">
-            {[
-              { t: "Increase reservoir capacity · Basin 07", by: "Restoration · Economics", c: 82 },
-              { t: "Reroute logistics · Corridor B → C", by: "Logistics · Sentinel", c: 74 },
-              { t: "Publish policy digest #A-19", by: "Governance", c: 61 },
-            ].map((a) => (
-              <li key={a.t} className="panel-inset p-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="text-sm">{a.t}</div>
-                    <div className="mono text-[10px] text-muted-foreground">{a.by} · confidence {a.c}%</div>
+        <Panel title="Approvals queue" code="APV" actions={<Chip tone="primary">{queue.length} pending</Chip>}>
+          {queue.length === 0 ? (
+            <div className="panel-inset p-6 text-center text-sm text-muted-foreground">
+              Queue clear. All recommendations processed.
+            </div>
+          ) : (
+            <ul className="space-y-3">
+              {queue.map((a) => (
+                <li key={a.id} className="panel-inset p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="text-sm">{a.t}</div>
+                      <div className="mono text-[10px] text-muted-foreground">{a.by} · confidence {a.c}%</div>
+                    </div>
+                    <div className="flex gap-1 shrink-0">
+                      <button onClick={() => decide(a, "approved")} className="mono text-[10px] uppercase px-2 py-1 rounded border border-primary/50 text-primary hover:bg-primary/10">approve</button>
+                      <button onClick={() => decide(a, "deferred")} className="mono text-[10px] uppercase px-2 py-1 rounded border border-border hover:bg-surface">defer</button>
+                      <button onClick={() => decide(a, "rejected")} className="mono text-[10px] uppercase px-2 py-1 rounded border border-danger/40 text-danger hover:bg-danger/10">reject</button>
+                    </div>
                   </div>
-                  <div className="flex gap-1 shrink-0">
-                    <button className="mono text-[10px] uppercase px-2 py-1 rounded border border-primary/50 text-primary hover:bg-primary/10">approve</button>
-                    <button className="mono text-[10px] uppercase px-2 py-1 rounded border border-border hover:bg-surface">defer</button>
-                    <button className="mono text-[10px] uppercase px-2 py-1 rounded border border-danger/40 text-danger hover:bg-danger/10">reject</button>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          )}
         </Panel>
+
 
         <Panel title="System Health" code="SYS">
           <div className="grid grid-cols-2 gap-3">
