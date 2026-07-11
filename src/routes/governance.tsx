@@ -120,8 +120,8 @@ function Governance() {
 
         <Panel title="Audit Log" code="AUD">
           <ul className="text-sm divide-y divide-border">
-            {AUDIT.map((a, i) => (
-              <li key={i} className="grid grid-cols-[80px_1fr_auto] gap-3 py-2 items-center">
+            {audit.map((a) => (
+              <li key={a.id} className="grid grid-cols-[80px_1fr_auto] gap-3 py-2 items-center animate-in fade-in slide-in-from-top-1 duration-500">
                 <span className="mono text-[11px] text-muted-foreground">{a.t}</span>
                 <div>
                   <span className="mono text-[10px] text-primary">{a.who}</span>
