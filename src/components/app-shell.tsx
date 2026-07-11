@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { startLiveStream, useLiveEvents } from "@/lib/live-store";
 
 type NavItem = { to: string; label: string; code: string; group: string };
 
