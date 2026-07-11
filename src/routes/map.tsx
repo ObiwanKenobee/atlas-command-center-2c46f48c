@@ -286,7 +286,39 @@ function LivingMap() {
               </div>
             </div>
             <div className="panel-inset p-3">
-              <div className="label-eyebrow mb-2">Other markers</div>
+              <div className="label-eyebrow mb-2">Evidence · {selected.evidence.length}</div>
+              <ul className="space-y-1.5">
+                {selected.evidence.map((ev) => (
+                  <li key={ev.id}>
+                    <a href={ev.href} className="flex items-center justify-between gap-2 text-[12px] hover:text-primary group">
+                      <span className="flex items-center gap-2 min-w-0">
+                        <EvidenceGlyph kind={ev.kind} />
+                        <span className="truncate">{ev.label}</span>
+                      </span>
+                      <span className="mono text-[9px] uppercase text-muted-foreground group-hover:text-primary">{ev.kind}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="panel-inset p-3">
+              <div className="label-eyebrow mb-2">Related missions · {selected.missions.length}</div>
+              <ul className="space-y-1.5">
+                {selected.missions.map((m) => (
+                  <li key={m.id}>
+                    <a href={`#/missions?id=${m.id}`} className="flex items-center justify-between gap-2 text-[12px] hover:text-primary">
+                      <span className="flex items-center gap-2 min-w-0">
+                        <Dot tone={m.status === "active" ? "ok" : m.status === "review" ? "warn" : "primary"} />
+                        <span className="truncate">{m.name}</span>
+                      </span>
+                      <span className="mono text-[9px] uppercase text-muted-foreground">{m.agent}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="panel-inset p-3">
+              <div className="label-eyebrow mb-2">Nearby markers</div>
               <ul className="space-y-1.5">
                 {PINS.filter((p) => active[p.type] && p !== selected).slice(0, 5).map((p, i) => (
                   <li key={i}>
